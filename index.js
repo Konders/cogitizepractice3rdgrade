@@ -1,9 +1,8 @@
 const express = require('express');
 const app = express();
 const bodyParser = require("body-parser");
-app.unsubscribe(bodyParser.json({type: "application/json"}));
+app.use(bodyParser.json({ type: "application/json" }));
 const port = 3000;
-app.use(express.json())
 let numbers = []
 
 const service = {
