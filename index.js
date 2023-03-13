@@ -1,24 +1,29 @@
-const express = require('express')
-const app = express()
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = express();
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+app.use(bodyParser.json({ type: 'application/json' }));
 
 app.get('/random', (req, res) => {
-  const from = Number(req.query.from) || 0
-  const to = Number(req.query.to) || 100
-  const randomNumber = Math.floor(Math.random() * (to - from + 1) + from)
-  res.send(`Random number from ${0} to ${100}: ${randomNumber}`)
-})
+  const from = Number(req.query.from);
+  const to = Number(req.query.to);
+  const randomNumber = Math.floor(Math.random() * (to - from + 1)) + from;
+  res.send(`Random number between ${0} and ${100}: ${randomNumber}`);
+});
 
-const numbers = []
+const numbers = [];
 app.post('/numbers', (req, res) => {
-  const number = req.body.number
-  numbers.push(number)
-  res.send(`Number ${number} was added to the array`)
-})
+  const number = req.body.number;
+  numbers.push(number);
+  res.send(`Number ${number} has been added to the array.`);
+});
 
-app.listen(3000, () => {
-  console.log('Server started on port 3000')
-})
+app.get('/', (req, res) => {
+  res.send("Hello, World!");
+});
+
+const PORT = 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+});
