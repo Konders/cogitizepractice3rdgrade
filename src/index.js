@@ -1,96 +1,52 @@
-// document.addEventListener("DOMContentLoaded", ()=> {
-//     alert('dsaf');
-// });
+const mongoose = require("mongoose");
+const express = require('express');
+
+// Require helpers
+const path = require('path');
+const dotenv = require('dotenv').config();
+
+// Require controllers
+const homeController = require('./controllers/homeController');
+
+const app = express();
 
 
-const formToObject = (formSelector) =>{
-    let formData = new FormData(formSelector);
+app.use(express.json());
+app.use(express.urlencoded());
 
-    let resObj = {};
-    for (const i of formData.keys()) {
-        resObj[i] = formData.get(i);
+// Controllers
+app.use('/movie',homeController);
+
+
+app.use((err, req, res, next) =>{
+    const statusCode = err.status || 400;
+    res.status(statusCode).json({ message: err.message })
+})
+
+
+
+const start = async ()=>{
+    try {
+        
+        await mongoose.connect(process.env.ConnectionString3);
+        console.log('database connection established');
+
+        let server = app.listen(5000);
+        
+        process.on('SIGINT', ()=>{
+            server.close(async () => {
+                console.log('db exit');
+                await mongoose.disconnect();
+                server.close();
+                process.exit(0);
+            })
+        });    
+        
+    } catch (error) {
+        await mongoose.disconnect();
+        console.log(error);
     }
-
-    return resObj;
-}
-
-
-const addNumberToList = (number)=>{
-    let list = document.querySelector('.number-list');
-    list.innerHTML += `
-        <div class="number-item">${number}</div>
-    `;
-}
-
-function isEmpty(str) {
-    if (str.trim() == '') 
-      return true;
-      
-    return false;
-  }
-
-
-const start = ()=>{
-    let btn = document.querySelector('#generateRandomNumberForm').querySelector('.submit');
-
-    btn.addEventListener('click', (e)=>{
-        e.preventDefault();
-
-        let form = document.querySelector('#generateRandomNumberForm');
-        let formData = new FormData(form);
-
-        let queryParams = '';
-        for( let i of formData.keys()){
-            queryParams += `${i}=${formData.get(i)}&`;
-            if(isEmpty(formData.get(i))) return
-        }
-
-        $.ajax({
-            url: `/random?${queryParams}`,
-            method: 'get',
-            dataType: 'json',
-
-            success: function(data){   
-                let inputElement = document.querySelector('#sendNumber');
-                inputElement.value = data.random
-            }
-        });
-            
-    })
-
-    
-    let addNumberBtn = document.querySelector('#addNumberForm').querySelector('.submit');
-
-    addNumberBtn.addEventListener('click', (e)=>{
-        e.preventDefault();
-
-        let addNumberForm = document.querySelector('#addNumberForm')
-        
-        let formValues = formToObject(addNumberForm);
-        
-        
-        $.ajax({
-            url: '/addNumber',
-            method: 'post',
-            dataType: 'json',
-            data: formValues,
-
-            complete: function(data, s){
-                if(data.status == 200){
-                    addNumberToList(formValues.number);
-                }
-                
-            }
-        });
-        
-    })
-    
-
-
-
-    
     
 }
 
-
-document.addEventListener("DOMContentLoaded", start);
+start();
