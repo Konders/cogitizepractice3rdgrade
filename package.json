@@ -1,0 +1,26 @@
+{
+  "name": "cogitize",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node database/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Konders/cogitizepractice3rdgrade.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Konders/cogitizepractice3rdgrade/issues"
+  },
+  "homepage": "https://github.com/Konders/cogitizepractice3rdgrade#readme",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "exrpess": "^0.0.1-security",
+    "mongoose": "^7.0.1"
+  },
+  "devDependencies": {},
+  "description": ""
+}
