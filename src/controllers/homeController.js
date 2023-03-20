@@ -36,26 +36,19 @@ router.get('/getAll', async (req, res, next) =>{
     }
 });
 
-router.post('/create', movieValidator , async (req,res) =>{
+router.post('/create', movieValidator , async (req,res,next) =>{
     try {
-        await movieService.createMovie(req.body);
+        let createdMovie = await movieService.createMovie(req.body);
+        res.json(createdMovie);
         // Краще повертати створений фільм.
         // До нас приходять вхідні дані, ми їх обробляємо в залежності від бізнес-логіки
         // та повертаємо вже ДТО з новими обробленими даними. Це дозволить оновлювати користувацький 
         // інтерфейс без перезавантажень і без додаткових запитів 
 
-
-        
         res.status(200).end();
     } catch (error) {
         next(error);
     }
 });
-
-// router.get('/error', async (req, res, next) =>{
-//     const err = new Error('An error occurred');
-//     err.statusCode = 400;
-//     next(err);
-// });
 
 module.exports = router;

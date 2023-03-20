@@ -1,13 +1,20 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+
+
 const MovieSchema = new Schema({
+    tmdb_id: {type:Number},
     title: String,
+    description: String,
     posterUrl: String,
-    about: String,
-    genre: { type: mongoose.Schema.Types.ObjectId, ref: 'Genres' },
+    type: String,
+    genres: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Genres' }],
     director: String,
     rating: Number,
-    releaseDate: Date,
+    runtime: Number,
+    backdrop: String,
+    releaseDate: {type:Date, required: false},
+    isDeleted: {type: Boolean, default: false }
 });
 
 

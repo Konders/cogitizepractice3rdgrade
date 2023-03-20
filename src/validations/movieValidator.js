@@ -9,17 +9,21 @@ const movieValidator = [
         .withMessage("Title length invalid"),
 
     
-    // body('posterUrl')
-    //     .isLength({min: 3, max: 100 }),
+    body('posterUrl')
+        .isLength({min: 3, max: 100 }),
 
-    body('about')
+    body('description')
         .notEmpty()
         .withMessage('about is empty')
         .isLength( { min: 10, max: 255 } ),
 
-    body('genre')
+    body('type')
         .notEmpty()
-        .withMessage('genre is empty'),
+        .withMessage('type is empty'),
+
+    body('genres')
+        .notEmpty()
+        .withMessage('genres is empty'),
 
     body('director')
         .notEmpty()
@@ -28,10 +32,18 @@ const movieValidator = [
     body('rating')
         .isNumeric()
         .withMessage('rating is not numeric'),
+
+    body('runtime')
+        .notEmpty()
+        .withMessage('runtime is not numeric'),
     
     body('releaseDate')
         .isDate()
         .withMessage('releaseDate is not date'),
+
+    body('backdrop')
+        .notEmpty()
+        .withMessage('backdrop is not date'),
 
     
     (req, res, next) => {
