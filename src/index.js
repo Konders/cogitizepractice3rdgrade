@@ -34,7 +34,7 @@ const start = async () => {
 
     //insertTMDBMovies();
 
-    let server = app.listen(5001);
+    let server = app.listen(process.env.PORT || 5001);
     process.on("SIGINT", () => {
       server.close(async () => {
         console.log("db exit");
