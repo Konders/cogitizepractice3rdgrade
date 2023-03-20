@@ -32,7 +32,7 @@ const start = async () => {
   try {
     const dbInstance = await database.connect();
 
-    insertTMDBMovies();
+    //insertTMDBMovies();
 
     let server = app.listen(5001);
     process.on("SIGINT", () => {

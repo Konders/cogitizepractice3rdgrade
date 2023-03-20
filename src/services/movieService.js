@@ -23,7 +23,7 @@ const createMovie = async (movie) =>{
 }
 
 
-const getAll = async () =>{
+const getAll = async () => {
     let res = await Movie.find();
     return res;
 }
