@@ -13,9 +13,11 @@ const database = require("./database");
 const axios = require("axios");
 const Genre = require("./models/Genre");
 const Movie = require("./models/Movie");
+const cors = require("cors");
 
 const app = express();
 
+app.use(cors({ credentials: true, origin: true }));
 app.use(express.json());
 app.use(express.urlencoded());
 
