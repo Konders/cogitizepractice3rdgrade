@@ -31,7 +31,7 @@ const getByTitle = async (title) => {
 };
 
 const getById = async (id) => {
-  return await Movie.findById(id);
+  return await Movie.findById(id).populate("genres");
 };
 
 const deleteMovie = async (id) => {
