@@ -20,8 +20,8 @@ const createMovie = async (movie) => {
   return result;
 };
 
-const getAll = async () => {
-  let res = await Movie.find().select("title tmdb_id posterUrl rating");
+const getAll = async (limit) => {
+  let res = await Movie.find({isDeleted: false}).select("title tmdb_id posterUrl rating").limit(limit);
   return res;
 };
 

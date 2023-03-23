@@ -32,9 +32,18 @@ app.use((err, req, res, next) => {
 
 const start = async () => {
   try {
-    const dbInstance = await database.connect();
+      const dbInstance = await database.connect();
+      
+      
 
-    //insertTMDBMovies();
+      
+      //insertTMDBMovies();
+      //await loadGenres();
+      //let a = await getDetailsMovie('284274');
+      await loadMovies();
+      // let a = await Movie.find();
+      // console.log(a.length);
+
 
     let server = app.listen(process.env.PORT || 5001);
     process.on("SIGINT", () => {
@@ -125,3 +134,115 @@ const insertTMDBMovies = async () => {
     }
   }
 };
+
+
+
+
+
+const getGenres  = async () => {
+   let r = await axios.get('https://api.themoviedb.org/3/genre/movie/list?api_key=3725ec249d4d39a19b4c054395a50391',{
+      params: {
+         api_key: process.env.TMDB_API_KEY,
+      }
+   });
+   return r.data.genres
+}
+
+const loadGenres = async () =>{
+   let genres = await getGenres(); 
+   
+   for (const item of genres) {
+      Genre.create({
+         name: item.name,
+         externalId: item.id
+      });   
+   }
+}
+
+const mapGenresID = async (tmdbGenresId) => {
+   let genres = await Genre.find();
+   return genres.filter( g => tmdbGenresId.includes(g.externalId) );
+}
+
+const getCountPages = async (withGenreId, withoutGenresId) =>{
+   const data = await getMoviePage(1, withGenreId, withoutGenresId);
+   return data.total_pages;
+}
+
+const loadMovies = async () =>{
+   let genres = await getGenres(); 
+   let withoutGenresId = [];
+   
+   for (const genre of genres) {
+      
+      let pageCount = await getCountPages(genre.id, withoutGenresId);
+      let maxPageCount = pageCount > 500 ? 500: pageCount;
+   
+      for (let pageNumber = 1; pageNumber <= maxPageCount; pageNumber++) {
+         try {
+            console.log("page: ", pageNumber);
+            const data = await getMoviePage(pageNumber, genre.id, withoutGenresId);
+            saveMovies(data.results);
+         } catch (error) {
+            console.log(error);
+         }
+      }
+
+      withoutGenresId.push(genre.id);
+   }
+}
+
+const getMoviePage = async (pageNumber, withGenreId, withoutGenresId) => {
+   let result = await axios.get('https://api.themoviedb.org/3/discover/movie',{
+      params:{
+         api_key: process.env.TMDB_API_KEY,
+         page: pageNumber,
+         sort_by: 'popularity.desc',
+         with_genres: withGenreId,
+         without_genres: withoutGenresId.join(',')
+      }
+   });
+
+   return result.data;
+}
+
+const saveMovies = async (movies) => {
+   for (const m of movies) {
+      let movieDetails = await getDetailsMovie(m.id);
+
+      console.log('save movie id: ', m.id);
+      try {
+         await Movie.create({
+            tmdb_id: movieDetails.id,
+            title: movieDetails.title,
+            type: "Movie",
+            tagline: movieDetails.tagline,
+            description: movieDetails.overview,
+            posterUrl: `https://image.tmdb.org/t/p/original${movieDetails.poster_path}`,
+            backdrop: `https://image.tmdb.org/t/p/original${movieDetails.backdrop_path}`,
+            rating: movieDetails.vote_average,
+            runtime: movieDetails.runtime,
+          
+            genres: await mapGenresID(movieDetails.genres),
+            releaseDate: movieDetails.release_date,
+          });   
+      } catch (error) {
+         console.log('error point');
+      }
+      
+   }
+}
+
+const getDetailsMovie = async (id) => {
+   const movie = await axios.get(`https://api.themoviedb.org/3/movie/${id}`,{
+      params: {
+         api_key: process.env.TMDB_API_KEY
+      }
+   });
+   return movie.data;
+}
+
+
+const insertTMDBMovies2 = async () => {
+
+}

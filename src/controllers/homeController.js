@@ -20,35 +20,43 @@ const tryFunc = async (func, nextMiddleware) =>{
     }
 }
 
-router.get('/get/:id', async (req, res, next) => {
-    tryFunc(async ()=>{
-        let movie = await movieService.getById(req.params['id'] );    
-        res.json(movie);    
-    }, next);
 
-});
-
-router.get('/getAll', async (req, res, next) =>{
+router.get('/list', async (req,res, next) =>{
     try {
-        res.json(await movieService.getAll());
+        let limit = req.query['limit'] || 10;
+        let genreId = req.query['genre'];
+
+        res.json(await movieService.getAll(limit));
     } catch (error) {
         next(error);
     }
 });
+
+router.get('/:id', async (req,res, next) => {
+    try {
+        let movie = await movieService.getById(req.params['id'] );    
+        res.json(movie);    
+    } catch (error) {
+        next(error);
+    }
+});
+
+
 
 router.post('/create', movieValidator , async (req,res,next) =>{
     try {
-        let createdMovie = await movieService.createMovie(req.body);
-        res.json(createdMovie);
-        // Краще повертати створений фільм.
-        // До нас приходять вхідні дані, ми їх обробляємо в залежності від бізнес-логіки
-        // та повертаємо вже ДТО з новими обробленими даними. Це дозволить оновлювати користувацький 
-        // інтерфейс без перезавантажень і без додаткових запитів 
-
+        //let createdMovie = await movieService.createMovie(req.body);
+    
         res.status(200).end();
+        //res.json(createdMovie);
     } catch (error) {
         next(error);
     }
 });
+
+
+router.put('/update', movieValidator, async (req, res, next)=>{
+
+})
 
 module.exports = router;

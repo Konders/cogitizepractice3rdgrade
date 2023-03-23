@@ -42,8 +42,8 @@ async function connect() {
     return;
   }
   let connectedDB = await mongoose.connect(MONGODB_URI, {
-    user: "Artur",
-    pass: "MongoDB123",
+    // user: "Artur",
+    // pass: "MongoDB123",
     keepAlive: true,
     useNewUrlParser: true,
     useUnifiedTopology: true,
