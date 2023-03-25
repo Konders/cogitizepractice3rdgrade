@@ -7,17 +7,16 @@ const movieSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    required: true,
   },
-  releaseYear: {
-    type: Number,
+  releaseDate: {
+    type: String,
   },
   genre: {
     type: [String],
     required: true,
   },
   runTime: {
-    type: String,
+    type: Number,
     required: true,
   },
   description: {
@@ -33,6 +32,9 @@ const movieSchema = new mongoose.Schema({
   },
   rating: {
     type: Number,
+  },
+  tagline: {
+    type: String,
   },
 });
 

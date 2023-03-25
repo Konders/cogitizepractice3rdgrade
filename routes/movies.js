@@ -46,19 +46,19 @@ router.get("/fetch", async (req, res, next) => {
           const movieDetailsList = detailsResponses.map(
             (detailsResponse) => detailsResponse.data
           );
-
           for (let i = 0; i < movies.length; i++) {
             const movieData = movies[i];
             const movieDetails = movieDetailsList[i];
             const movie = new Movie({
               title: movieData.title,
-              type: "movie",
-              releaseYear: parseInt(movieData.release_date) || null,
+              type: movieDetails.type,
+              releaseDate: movieData.release_date || null,
               genre: movieDetails.genres.map((genre) =>
                 genre.name.toLowerCase()
               ),
+              tagline: movieDetails.tagline,
               rating: movieData.vote_average || 0,
-              runTime: `${movieDetails.runtime} min`,
+              runTime: movieDetails.runtime,
               description: movieData.overview,
               poster: `https://image.tmdb.org/t/p/w500${movieData.poster_path}`,
               backdrop: `https://image.tmdb.org/t/p/original${movieData.backdrop_path}`,

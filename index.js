@@ -2,15 +2,14 @@ const express = require("express");
 const mongoose = require("mongoose");
 const moviesRouter = require("./routes/movies");
 require("dotenv").config();
+const cors = require("cors");
 
 const app = express();
 
-// Connect to MongoDB
 mongoose
   .connect(process.env.MongoDB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    bufferMaxEntries: 0,
     bufferCommands: false,
   })
   .then(() => {
