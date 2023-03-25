@@ -2,22 +2,17 @@ const express = require("express");
 const mongoose = require("mongoose");
 const moviesRouter = require("./routes/movies");
 require("dotenv").config();
-const cors = require("cors");
 
 const app = express();
 
-mongoose
-  .connect(process.env.MongoDB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    console.log("Connected to MongoDB");
-  })
-  .catch((error) => {
-    console.error("Error connecting to MongoDB", error);
-  });
-app.use(cors({ credentials: true, origin: true }));
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  connectTimeoutMS: 30000,
+  socketTimeoutMS: 90000,
+  keepAlive: true,
+});
 
 // Middleware for handling JSON requests
 app.use(express.json());
