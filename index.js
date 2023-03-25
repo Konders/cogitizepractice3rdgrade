@@ -6,7 +6,7 @@ const cors = require("cors");
 
 const app = express();
 
-mongoose
+await mongoose
   .connect(process.env.MongoDB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -19,7 +19,6 @@ mongoose
     console.error("Error connecting to MongoDB", error);
   });
 app.use(cors({ credentials: true, origin: true }));
-
 // Middleware for handling JSON requests
 app.use(express.json());
 
