@@ -44,7 +44,7 @@ movieRouter.get('/', async (req, res, next) => {
     next(error);
   }
 });
-
+// route handler for getting movie by id
 movieRouter.get("/:id", async (req, res, next) => {
   try {
     const movie = await Movie.findById(req.params.id);
@@ -68,6 +68,8 @@ movieRouter.get('/search/:query', async (req, res, next) => {
     next(error);
   }
 });
+
+// route handler for getting a list of movies by genres
 listRouter.get('/list', async (req, res) => {
   const limit = parseInt(req.query.limit) || 10;
   const genre = req.query.genre || '';
@@ -89,7 +91,7 @@ listRouter.get('/list', async (req, res) => {
 
 axiosRetry(axios, { retries: 3 }); // Retry up to 3 times
 
-
+// route handler for posting movies from tmdb to database
 movieRouter.post('/add', async (req, res, next) => {
   try {
     const genres = [28, 27, 18, 35]; // Specify the genre IDs to search for
@@ -149,15 +151,15 @@ movieRouter.post('/add', async (req, res, next) => {
   }
 });
 
-// route handler for cleaning the database
-movieRouter.delete('/clean', async (req, res, next) => {
-  try {
-    await Movie.deleteMany();
-    res.send('Database cleaned successfully');
-  } catch (error) {
-    next(error);
-  }
-});
+// route handler for cleaning the database (pls dont)
+// movieRouter.delete('/clean', async (req, res, next) => {
+//   try {
+//     await Movie.deleteMany();
+//     res.send('Database cleaned successfully');
+//   } catch (error) {
+//     next(error);
+//   }
+// });
 
 // attach movie router to main route
 app.use('/movie', movieRouter);
