@@ -47,7 +47,6 @@ router.get('/random/:genre', async (req, res, next) => {
         let limit =  Number(req.query['limit']) || 10;
         let genreId = req.params['genre'];
 
-        
         if(!genreId) throw new Error("genre is undefined");
         
         res.json(await movieService.getRandom(genreId, limit));    
@@ -63,7 +62,7 @@ router.get('/page/:pageNum', movieFilters, async (req, res, next) =>{
         const pageNum = Number(req.params['pageNum']);
         if(!pageNum) throw new Error("page number is undefined");
         
-        res.json(await movieService.getPageFilter(pageNum, req.filter));
+        res.json(await movieService.getPage(pageNum, req.filter));
     } catch (error) {
         next(error);
     }

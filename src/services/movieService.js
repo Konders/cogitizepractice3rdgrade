@@ -70,27 +70,10 @@ const getByGenres = async (genresId) => {
   return await Movie.find({genres: { $in: genresId}}).limit(10);
 }
 
-const getPage = async (page, genre) =>{
 
-  let filter = { isDeleted: false };
-  if(genre){
-    filter.genres = genre;
-  }
 
-  const movies =  await Movie.find(filter)
-  .select("title tmdb_id posterUrl rating")
-  .skip((page - 1) * PAGE_SIZE)
-  .limit(PAGE_SIZE);
+const getPage = async (page, filter) =>{
   
-  if(movies.length <= 0 ) throw new Error("Page not found" );
-  
-
-  return movies;
-}
-
-
-const getPageFilter = async (page, filter) =>{
-  console.log(filter);
   const movies =  await Movie.find(filter)
   .select("title tmdb_id posterUrl rating")
   .skip((page - 1) * PAGE_SIZE)
@@ -112,5 +95,5 @@ module.exports = {
   getRandom,
   getByGenres,
   getPage,
-  getPageFilter
+  
 };
