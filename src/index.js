@@ -23,7 +23,7 @@ app.use(express.urlencoded());
 
 // Controllers
 app.use("/movie", homeController);
-app.use("/tmdb", tmdbController);
+// app.use("/tmdb", tmdbController);
 
 app.use((err, req, res, next) => {
   const statusCode = err.status || 400;
@@ -33,17 +33,10 @@ app.use((err, req, res, next) => {
 const start = async () => {
   try {
       const dbInstance = await database.connect();
-      
-      
-
-      
-      //insertTMDBMovies();
-      //await loadGenres();
-      //let a = await getDetailsMovie('284274');
-      await loadMovies();
-      // let a = await Movie.find();
-      // console.log(a.length);
-
+      //loadMovies();
+      //mapGenresID([12,35]);
+      // let mov = await Movie.find().limit(1).populate("genres");
+      // console.log(mov);
 
     let server = app.listen(process.env.PORT || 5001);
     process.on("SIGINT", () => {
@@ -152,16 +145,22 @@ const loadGenres = async () =>{
    let genres = await getGenres(); 
    
    for (const item of genres) {
+    try {
+      
+    } catch (error) {
       Genre.create({
-         name: item.name,
-         externalId: item.id
-      });   
+        name: item.name,
+        externalId: item.id
+     });   
+    }
+      
    }
 }
 
 const mapGenresID = async (tmdbGenresId) => {
-   let genres = await Genre.find();
-   return genres.filter( g => tmdbGenresId.includes(g.externalId) );
+  let genres = await Genre.find(); 
+  return genres.filter( g => tmdbGenresId.includes(g.externalId)).map( g => g.id);
+
 }
 
 const getCountPages = async (withGenreId, withoutGenresId) =>{
@@ -181,8 +180,9 @@ const loadMovies = async () =>{
       for (let pageNumber = 1; pageNumber <= maxPageCount; pageNumber++) {
          try {
             console.log("page: ", pageNumber);
-            const data = await getMoviePage(pageNumber, genre.id, withoutGenresId);
-            saveMovies(data.results);
+            let r = await getMoviePage(pageNumber, genre.id, withoutGenresId)
+            
+            saveMovies(r.results);
          } catch (error) {
             console.log(error);
          }
@@ -208,11 +208,10 @@ const getMoviePage = async (pageNumber, withGenreId, withoutGenresId) => {
 
 const saveMovies = async (movies) => {
    for (const m of movies) {
-      let movieDetails = await getDetailsMovie(m.id);
-
-      console.log('save movie id: ', m.id);
-      try {
-         await Movie.create({
+     console.log("save move: ", m.id);
+     try {
+          let movieDetails = await getDetailsMovie(m.id);
+          await Movie.create({
             tmdb_id: movieDetails.id,
             title: movieDetails.title,
             type: "Movie",
@@ -223,11 +222,11 @@ const saveMovies = async (movies) => {
             rating: movieDetails.vote_average,
             runtime: movieDetails.runtime,
           
-            genres: await mapGenresID(movieDetails.genres),
+            genres: await mapGenresID(movieDetails.genres.map(g => g.id)),
             releaseDate: movieDetails.release_date,
           });   
       } catch (error) {
-         console.log('error point');
+         console.log(error);
       }
       
    }
@@ -243,6 +242,3 @@ const getDetailsMovie = async (id) => {
 }
 
 
-const insertTMDBMovies2 = async () => {
-
-}

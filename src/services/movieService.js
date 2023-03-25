@@ -1,5 +1,9 @@
 const Movie = require("../models/Movie");
 const Genre = require("../models/Genre");
+const { default: mongoose } = require("mongoose");
+
+
+const PAGE_SIZE = 10;
 
 const createMovie = async (movie) => {
   console.log(movie);
@@ -20,7 +24,8 @@ const createMovie = async (movie) => {
   return result;
 };
 
-const getAll = async (limit) => {
+const getList = async (limit, genres) => {
+  
   let res = await Movie.find({isDeleted: false}).select("title tmdb_id posterUrl rating").limit(limit);
   return res;
 };
@@ -31,7 +36,7 @@ const getByTitle = async (title) => {
 };
 
 const getById = async (id) => {
-  return await Movie.findById(id).populate("genres");
+  return await Movie.findById(id).populate('genres');
 };
 
 const deleteMovie = async (id) => {
@@ -44,10 +49,48 @@ const updateMovie = async (movie) => {
   return movieUpdate;
 };
 
+const getRandom = async (genre, limit = 8) => {
+  
+  return await Movie.aggregate([
+    { $match: { genres: new mongoose.Types.ObjectId(genre) }},
+    { $sample: { size: limit } },
+  ]);
+
+    
+};
+
+const getByGenres = async (genresId) => {
+  return await Movie.find({genres: { $in: genresId}}).limit(10);
+}
+
+const getPage = async (page, genre) =>{
+
+  let filter = { isDeleted: false };
+  if(genre){
+    filter.genres = genre;
+  }
+
+  const movies =  await Movie.find(filter)
+  .select("title tmdb_id posterUrl rating")
+  .skip((page - 1) * PAGE_SIZE)
+  .limit(PAGE_SIZE);
+  
+  if(movies.length <= 0 ) throw new Error("Page not found" );
+  
+
+  return movies;
+}
+
+
+
+
 module.exports = {
   createMovie,
-  getAll,
+  getList,
   getByTitle,
   getById,
   updateMovie,
+  getRandom,
+  getByGenres,
+  getPage
 };

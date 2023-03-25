@@ -18,18 +18,18 @@ const router = express.Router();
 //   res.json(data);
 // });
 
-router.get("/movie/:id", async (req, res, next) => {
-  res.json(await movieService.getById(req.params['id']));
-});
+// router.get("/movie/:id", async (req, res, next) => {
+//   res.json(await movieService.getById(req.params['id']));
+// });
 
-router.get("/movie", async (req, res, next) => {
+// router.get("/movie", async (req, res, next) => {
   
-  let limit = req.query['limit'] || 10;
-  let moviesList = await movieService.getAll();
+//   let limit = req.query['limit'] || 10;
+//   let moviesList = await movieService.getAll();
 
-  console.log(limit);
-  res.json(moviesList.slice(0,limit));
-});
+//   console.log(limit);
+//   res.json(moviesList.slice(0,limit));
+// });
 
 
 
