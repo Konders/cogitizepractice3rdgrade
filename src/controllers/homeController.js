@@ -71,12 +71,13 @@ router.get('/genres', async (req, res, next) => {
 
 router.get('/random/:genre', async (req, res, next) => {
     try {
-        let limit = req.query['limit'] || 10;
+        let limit =  Number(req.query['limit']) || 10;
         let genreId = req.params['genre'];
 
+        
         if(!genreId) throw new Error("genre is undefined");
         
-        res.json(await movieService.getRandom(genreId, 10));    
+        res.json(await movieService.getRandom(genreId, limit));    
     } catch (error) {
         next(error);
     }
