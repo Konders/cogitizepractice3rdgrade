@@ -54,6 +54,13 @@ const getRandom = async (genre, limit = 8) => {
   return await Movie.aggregate([
     { $match: { genres: new mongoose.Types.ObjectId(genre) }},
     { $sample: { size: limit } },
+    { $lookup: {
+      from: 'genres',
+      localField: 'genres',
+      foreignField: '_id',
+      as: 'genres'
+    }
+  }
   ]);
 
     
@@ -82,6 +89,18 @@ const getPage = async (page, genre) =>{
 }
 
 
+const getPageFilter = async (page, filter) =>{
+  console.log(filter);
+  const movies =  await Movie.find(filter)
+  .select("title tmdb_id posterUrl rating")
+  .skip((page - 1) * PAGE_SIZE)
+  .limit(PAGE_SIZE);
+  
+  if(movies.length <= 0 ) throw new Error("Page not found" );
+  
+
+  return movies;
+}
 
 
 module.exports = {
@@ -92,5 +111,6 @@ module.exports = {
   updateMovie,
   getRandom,
   getByGenres,
-  getPage
+  getPage,
+  getPageFilter
 };

@@ -7,7 +7,7 @@ const dotenv = require("dotenv").config();
 
 // Require controllers
 const homeController = require("./controllers/homeController");
-const tmdbController = require("./controllers/tmdbController");
+
 
 const database = require("./database");
 const axios = require("axios");

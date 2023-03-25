@@ -8,32 +8,16 @@ const movieService = require('../services/movieService');
 // validations
 const { movieValidator }  = require('../validations/movieValidator');
 const Genre = require("../models/Genre");
-const Movie = require("../models/Movie");
+
+// filters
+const movieFilters = require('../filters/movieFilters');
+
 
 
 const router = express.Router();
 
-// Навіть уявити важко, навіщо :)
-const tryFunc = async (func, nextMiddleware) =>{
-    try {
-        await func();
-    } catch (error) {
-        nextMiddleware(error);
-    }
-}
 
 
-// router.get('/list', async (req,res, next) =>{
-//     try {
-//         let limit = req.query['limit'] || 10;
-//         let genres = req.query['genre'];
-        
-//         res.json(await movieService.getList(limit,genres));
-        
-//     } catch (error) {
-//         next(error);
-//     }
-// });
 
 router.get('/details/:id', async (req,res, next) => {
     try {
@@ -45,17 +29,6 @@ router.get('/details/:id', async (req,res, next) => {
 });
 
 
-
-// router.post('/create', movieValidator , async (req,res,next) =>{
-//     try {
-//         //let createdMovie = await movieService.createMovie(req.body);
-    
-//         res.status(200).end();
-//         //res.json(createdMovie);
-//     } catch (error) {
-//         next(error);
-//     }
-// });
 
 
 
@@ -85,21 +58,17 @@ router.get('/random/:genre', async (req, res, next) => {
 });
 
 
-router.get('/page/:pageNum', async (req, res, next) =>{
+router.get('/page/:pageNum', movieFilters, async (req, res, next) =>{
     try {
-        const pageNum = req.params['pageNum'];
-        const genreId = req.query['genre'];
+        const pageNum = Number(req.params['pageNum']);
+        if(!pageNum) throw new Error("page number is undefined");
         
-        if(!pageNum) throw new Error("page number is undefined")
-        
-        let pageResult = await movieService.getPage(pageNum, genreId);
-
-        res.json(pageResult)    ;
-
+        res.json(await movieService.getPageFilter(pageNum, req.filter));
     } catch (error) {
         next(error);
     }
     
 });
+
 
 module.exports = router;
