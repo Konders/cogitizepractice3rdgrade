@@ -94,7 +94,8 @@ router.get("/list", async (req, res, next) => {
     }
     const limit = parseInt(req.query.limit) || 10;
     const count = await Movie.countDocuments(query);
-    const randomMovies = await Movie.find(query).limit(limit);
+    const randomIndex = Math.floor(Math.random() * count);
+    const randomMovies = await Movie.find(query).skip(randomIndex).limit(limit);
     res.status(200).json(randomMovies);
   } catch (error) {
     next(error);
