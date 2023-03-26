@@ -32,7 +32,6 @@ router.get("/fetch", async (req, res, next) => {
           const response = await axios.get(url);
 
           const movies = response.data.results;
-
           if (movies.length === 0) {
             break;
           }
@@ -46,25 +45,26 @@ router.get("/fetch", async (req, res, next) => {
           const movieDetailsList = detailsResponses.map(
             (detailsResponse) => detailsResponse.data
           );
+
           for (let i = 0; i < movies.length; i++) {
             const movieData = movies[i];
             const movieDetails = movieDetailsList[i];
-            const movie = new Movie({
-              title: movieData.title,
-              type: movieDetails.type,
-              releaseDate: movieData.release_date || null,
-              genre: movieDetails.genres.map((genre) =>
-                genre.name.toLowerCase()
-              ),
-              tagline: movieDetails.tagline,
-              rating: movieData.vote_average || 0,
-              runTime: movieDetails.runtime,
-              description: movieData.overview,
-              poster: `https://image.tmdb.org/t/p/w500${movieData.poster_path}`,
-              backdrop: `https://image.tmdb.org/t/p/original${movieData.backdrop_path}`,
-            });
-
-            movieList.push(movie);
+            if (movieData.poster_path) {
+              const movie = new Movie({
+                title: movieData.title,
+                releaseDate: movieData.release_date || null,
+                genre: movieDetails.genres.map((genre) =>
+                  genre.name.toLowerCase()
+                ),
+                tagline: movieDetails.tagline,
+                rating: movieData.vote_average || 0,
+                runTime: movieDetails.runtime,
+                description: movieData.overview,
+                poster: `https://image.tmdb.org/t/p/w500${movieData.poster_path}`,
+                backdrop: `https://image.tmdb.org/t/p/original${movieData.backdrop_path}`,
+              });
+              movieList.push(movie);
+            }
           }
 
           totalMovies += movies.length;
@@ -95,7 +95,10 @@ router.get("/list", async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 10;
     const count = await Movie.countDocuments(query);
     const randomIndex = Math.floor(Math.random() * count);
-    const randomMovies = await Movie.find(query).skip(randomIndex).limit(limit);
+    const randomMovies = await Movie.find(query)
+      .select("title poster _id rating")
+      .skip(randomIndex)
+      .limit(limit);
     res.status(200).json(randomMovies);
   } catch (error) {
     next(error);

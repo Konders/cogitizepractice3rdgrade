@@ -5,13 +5,10 @@ const movieSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  type: {
-    type: String,
-  },
   releaseDate: {
     type: String,
   },
-  genre: {
+  genres: {
     type: [String],
     required: true,
   },
