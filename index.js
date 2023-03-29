@@ -1,12 +1,14 @@
+require('dotenv').config()
 const express = require('express');
 const {MovieRepository} = require("./repository/movie");
 const createError = require("http-errors");
-
+const movieRouter = require('./routes/movie');
 const app = express();
-const movieRepository = new MovieRepository();
 
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
+app.use('/movies', movieRouter);
+
 app.get('/random', (req, res) => {
     const from = Number(req.query.from);
     const to = Number(req.query.to);
@@ -21,24 +23,12 @@ app.post('/numbers', (req, res) => {
     res.send(`Number ${number} has been added to the array.`);
 });
 
+
 app.get('/', (req, res) => {
     res.send("Hello, World!");
 });
 
 
-app.post('/movies', (req, res) => {
-    movieRepository.create(req.body).then(r => res.json(r));
-})
-
-app.get('/movies', (req, res) => {
-    const params = {};
-
-    if (req.query.id !== undefined) {
-        params['_id'] =  req.query.id;
-    }
-
-    movieRepository.findBy(params).then(r => res.json(r));
-})
 
 
 app.use(function (req, res, next) {
