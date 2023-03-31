@@ -13,6 +13,11 @@ class Tmdb {
         const result = await axios.get(`${this.url}/movie/${id}?api_key=${this.apiKey}&language=en-US`)
         return result.data;
     }
+
+    async getMovieCredits(id) {
+        const result = await axios.get(`${this.url}/movie/${id}/credits?api_key=${this.apiKey}&language=en-US`)
+        return result.data;
+    }
 }
 
 module.exports = {Tmdb}
